@@ -32,7 +32,10 @@ export class BirthdayService {
       const birthdayMMDD = moment(user.birthday).format('MM-DD');
 
       if (todayMMDD === birthdayMMDD) {
-        logger.info(`🎉 Happy Birthday, ${user.name}!`);
+        const timeString = nowInUserTZ.format('YYYY-MM-DD HH:mm:ss z');
+        logger.info(
+          `🎉 Happy Birthday, ${user.name}! (Time: ${timeString} in ${user.timezone})`,
+        );
       }
     }
   }
