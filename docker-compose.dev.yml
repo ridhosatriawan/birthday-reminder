@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  mongo_db:
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+
+  nodejs_app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - 4000:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      MONGO_URI: mongodb://mongo_db:27017/birthday_reminder_dev
+    depends_on:
+      - mongo_db
+    command: npm run dev
+
+volumes:
+  mongo_db: {}
