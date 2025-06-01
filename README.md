@@ -150,7 +150,7 @@ Status: `404 Not Found`
 
 - **Timezone Handling:** The system assumes user-provided timezones are valid IANA timezone strings. Moment-timezone is used to handle timezone conversions and date comparisons.
 - **Birthday Matching:** Birthday check matches month and day only (ignores year).
-- **Cron Schedule:** Birthday reminder runs every minutes to accommodate users across all timezones.
+- **Cron Schedule:** Birthday reminder runs every 15 minutes to accommodate users across all timezones.
 - **Database:** MongoDB is used to store user data. The app expects a live MongoDB instance reachable via URI in `.env`.
 - **Error Handling:** Validation uses Zod and Mongoose validations with custom error middleware to format responses.
 
