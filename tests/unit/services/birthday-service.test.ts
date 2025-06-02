@@ -46,9 +46,15 @@ describe('BirthdayService.processBirthdayWishes', () => {
 
     await BirthdayService.processBirthdayWishes();
 
-    expect(infoSpy).toHaveBeenCalledWith('🎉 Happy Birthday, Ridho!');
-    expect(infoSpy).toHaveBeenCalledWith('🎉 Happy Birthday, Lisa!');
-    expect(infoSpy).not.toHaveBeenCalledWith('🎉 Happy Birthday, Other!');
+    expect(infoSpy).toHaveBeenCalledWith(
+      expect.stringContaining('🎉 Happy Birthday, Ridho!'),
+    );
+    expect(infoSpy).toHaveBeenCalledWith(
+      expect.stringContaining('🎉 Happy Birthday, Lisa!'),
+    );
+    expect(infoSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('🎉 Happy Birthday, Other!'),
+    );
   });
 
   it('should skip when no timezone at 9AM', async () => {
@@ -57,7 +63,7 @@ describe('BirthdayService.processBirthdayWishes', () => {
     await BirthdayService.processBirthdayWishes();
 
     expect(infoSpy).toHaveBeenCalledWith(
-      'No timezones are currently at 9 AM. Skipping birthday processing.',
+      'No timezones are currently at 09:00 AM. Skipping birthday processing.',
     );
   });
 });

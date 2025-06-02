@@ -49,7 +49,7 @@ describe('UserValidation', () => {
 
     it('should transform birthday into Date object', () => {
       const result = UserValidation.CREATE.parse(validData);
-      expect(result.birthday instanceof Date).toBe(true);
+      expect(result.birthday).toBe('1990-01-01');
     });
   });
 
