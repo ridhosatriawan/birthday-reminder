@@ -31,7 +31,7 @@ export class UserValidation {
         message: 'Please enter a valid birth date',
       },
     )
-    .transform((val) => moment(val, 'YYYY-MM-DD').toDate());
+    .transform((val) => val);
 
   private static readonly timeZoneSchema = z
     .string()

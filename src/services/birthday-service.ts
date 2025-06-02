@@ -9,7 +9,7 @@ export class BirthdayService {
 
     if (timezonesAt9AM.length === 0) {
       logger.info(
-        'No timezones are currently at 9 AM. Skipping birthday processing.',
+        'No timezones are currently at 09:00 AM. Skipping birthday processing.',
       );
       return;
     }
