@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { web } from '../../src/applications/web';
+import { web } from '../../api/applications/web';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env' });

@@ -1,26 +1,46 @@
-version: '3'
+version: '3.8'
 
 services:
   mongo_db:
     image: mongo:latest
+    container_name: dev-mongo
     restart: always
     volumes:
       - mongo_db:/data/db
 
-  nodejs_app:
+  dev_api:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    container_name: dev-api
+    command: npm run dev:api
     ports:
-      - 4000:3000
+      - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules
     environment:
+      NODE_ENV: development
       MONGO_URI: mongodb://mongo_db:27017/birthday_reminder_dev
     depends_on:
       - mongo_db
-    command: npm run dev
+    restart: unless-stopped
+
+  dev_cron:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: dev-cron
+    command: npm run dev:work
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      MONGO_URI: mongodb://mongo_db:27017/birthday_reminder_dev
+    depends_on:
+      - mongo_db
+    restart: unless-stopped
 
 volumes:
   mongo_db: {}

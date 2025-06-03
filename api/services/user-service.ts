@@ -1,5 +1,5 @@
 import { ResponseError } from '../error/response-error';
-import { User } from '../models/user-model';
+import { IUser, User } from '../models/user-model';
 import {
   CreateUserReqBody,
   UpdateUserReqBody,
@@ -22,6 +22,7 @@ export class UserService {
 
   public static async createUser(body: CreateUserReqBody) {
     const data = Validation.validate(UserValidation.CREATE, body);
+
     const created = await User.create({
       name: data.name,
       email: data.email,
@@ -39,15 +40,24 @@ export class UserService {
     const dataParams = Validation.validate(UserValidation.PARAMS, params);
     const dataBody = Validation.validate(UserValidation.UPDATE, body);
 
-    const updated = await User.findByIdAndUpdate(
-      dataParams._id,
-      { ...dataBody },
-      {
-        new: true,
-      },
+    const user = await User.findById(dataParams._id);
+
+    const filteredData: Partial<
+      Pick<IUser, 'name' | 'email' | 'timezone' | 'birthday'>
+    > = Object.fromEntries(
+      Object.entries(dataBody).filter(([_, value]) => value !== undefined),
     );
 
-    return updated;
+    if (!user) {
+      throw new ResponseError(404, 'User not found');
+    }
+
+    for (const [key, value] of Object.entries(filteredData)) {
+      (user as any)[key] = value;
+    }
+
+    await user.save();
+    return user;
   }
 
   public static async deleteUser(params: UserReqParams) {

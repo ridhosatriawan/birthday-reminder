@@ -1,0 +1,6 @@
+{
+  "watch": ["api/main.ts"],
+  "ext": "ts",
+  "exec": "ts-node ./api/main.ts",
+  "legacyWatch": true
+}

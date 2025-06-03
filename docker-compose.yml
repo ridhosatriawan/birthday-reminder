@@ -1,23 +1,39 @@
-version: '3'
+version: '3.8'
 
 services:
-  mongo_db :
-    container_name : mongo_container
-    image : mongo:latest
-    restart : always
-    volumes : 
+  mongo_db:
+    image: mongo:latest
+    container_name: prod-mongo
+    restart: always
+    volumes:
       - mongo_db:/data/db
 
-  nodejs_app : 
-    build : 
-      context : .
-      target : production
-    ports : 
-      - 4000:3000
-    environment : 
-      MONGO_URI: mongodb://mongo_db:27017/birthday_reminder
-    depends_on: 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+    container_name: prod-api
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      MONGO_URI: mongodb://mongo_db:27017/birthday_reminder_prod
+    depends_on:
       - mongo_db
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: prod-worker
+    environment:
+      NODE_ENV: production
+      MONGO_URI: mongodb://mongo_db:27017/birthday_reminder_prod
+    depends_on:
+      - mongo_db
+    restart: unless-stopped
+    command: node dist/worker/main.js
 
 volumes:
   mongo_db: {}

@@ -1,10 +1,13 @@
+import moment from 'moment-timezone';
 import { Document, Schema, model } from 'mongoose';
+import { getNextBday } from '../../worker/lib/utils';
 
 export interface IUser extends Document {
   name: string;
   email: string;
   birthday: Date;
   timezone: string;
+  nextBirthday?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -21,6 +24,7 @@ const UserSchema = new Schema<IUser>(
       required: [true, 'Email is required'],
       unique: true,
       trim: true,
+      lowercase: true,
     },
     birthday: {
       type: Date,
@@ -30,6 +34,7 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: [true, 'Timezone is required'],
     },
+    nextBirthday: { type: Date, index: true },
   },
   { timestamps: true },
 ).set('toJSON', {
@@ -38,5 +43,21 @@ const UserSchema = new Schema<IUser>(
     return ret;
   },
 });
+
+UserSchema.pre<IUser>('save', function (next) {
+  this.nextBirthday = calculateNextBirthday(this.birthday, this.timezone);
+  next();
+});
+
+export function calculateNextBirthday(birthday: Date, timezone: string): Date {
+  let nextBday = getNextBday(birthday, timezone);
+  const today = moment().tz(timezone);
+
+  if (nextBday.isBefore(today)) {
+    nextBday = nextBday.add(1, 'year');
+  }
+
+  return nextBday.toDate();
+}
 
 export const User = model<IUser>('User', UserSchema);

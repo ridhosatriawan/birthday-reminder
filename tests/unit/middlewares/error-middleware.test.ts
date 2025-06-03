@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { ZodError, ZodIssue } from 'zod';
-import { ResponseError } from '../../../src/error/response-error';
-import { errorMiddleware } from '../../../src/middlewares/error-middleware';
+import { ResponseError } from '../../../api/error/response-error';
+import { errorMiddleware } from '../../../api/middlewares/error-middleware';
 
 function createMockResponse() {
   const res: Partial<Response> = {};
