@@ -1,0 +1,6 @@
+{
+  "watch": ["cron/main.ts"],
+  "ext": "ts",
+  "exec": "ts-node ./cron/main.ts",
+  "legacyWatch": true
+}

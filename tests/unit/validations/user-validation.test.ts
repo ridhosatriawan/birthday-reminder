@@ -1,7 +1,7 @@
 import moment from 'moment-timezone';
 import mongoose from 'mongoose';
 import { ZodError } from 'zod';
-import { UserValidation } from '../../../src/validations/user-validation';
+import { UserValidation } from '../../../api/validations/user-validation';
 
 describe('UserValidation', () => {
   const validData = {
@@ -49,7 +49,7 @@ describe('UserValidation', () => {
 
     it('should transform birthday into Date object', () => {
       const result = UserValidation.CREATE.parse(validData);
-      expect(result.birthday).toBe('1990-01-01');
+      expect(result.birthday.toISOString()).toBe('1990-01-01T00:00:00.000Z');
     });
   });
 

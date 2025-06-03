@@ -1,9 +1,10 @@
-import { User } from '../../../src/models/user-model';
-import { UserService } from '../../../src/services/user-service';
-import { Validation } from '../../../src/validations/validation';
+import { ResponseError } from '../../../api/error/response-error';
+import { User } from '../../../api/models/user-model';
+import { UserService } from '../../../api/services/user-service';
+import { Validation } from '../../../api/validations/validation';
 
-jest.mock('../../../src/models/user-model');
-jest.mock('../../../src/validations/validation', () => ({
+jest.mock('../../../api/models/user-model');
+jest.mock('../../../api/validations/validation', () => ({
   Validation: {
     validate: jest.fn(),
   },
@@ -64,20 +65,24 @@ describe('UserService - Success Scenarios', () => {
     it('should update a user and return the updated user', async () => {
       const params = { _id: '1a2b3c4d5e' };
       const body = { name: 'Mike Wazowski' };
-      const updatedUser = { ...mockedUser, name: 'Mike Wazowski' };
+      const updatedUser = {
+        ...mockedUser,
+        name: 'Mike Wazowski',
+        save: jest.fn().mockResolvedValue(true),
+      };
 
       (Validation.validate as jest.Mock)
         .mockImplementationOnce(() => params)
         .mockImplementationOnce(() => body);
 
-      (User.findByIdAndUpdate as jest.Mock).mockResolvedValue(updatedUser);
+      (User.findById as jest.Mock).mockResolvedValue(updatedUser);
 
       const result = await UserService.updateUser(params, body);
 
       expect(Validation.validate).toHaveBeenCalledTimes(2);
-      expect(User.findByIdAndUpdate).toHaveBeenCalledWith('1a2b3c4d5e', body, {
-        new: true,
-      });
+      expect(User.findById).toHaveBeenCalledWith('1a2b3c4d5e');
+      expect(updatedUser.name).toBe('Mike Wazowski');
+      expect(updatedUser.save).toHaveBeenCalled();
       expect(result).toEqual(updatedUser);
     });
   });
@@ -182,19 +187,16 @@ describe('UserService - Failure Scenarios', () => {
       ).rejects.toThrow('Bad data');
     });
 
-    it('should return null if user not found for update', async () => {
+    it('should throw not found for update', async () => {
       (Validation.validate as jest.Mock)
         .mockImplementationOnce(() => ({ _id: '1a2b3c4d5e' }))
         .mockImplementationOnce(() => ({ name: 'Updated Name' }));
 
-      (User.findByIdAndUpdate as jest.Mock).mockResolvedValue(null);
+      (User.findById as jest.Mock).mockResolvedValue(null);
 
-      const result = await UserService.updateUser(
-        { _id: '1a2b3c4d5e' },
-        { name: 'Updated Name' },
-      );
-
-      expect(result).toBeNull();
+      await expect(
+        UserService.updateUser({ _id: '1a2b3c4d5e' }, { name: 'Updated Name' }),
+      ).rejects.toThrow(ResponseError);
     });
   });
 

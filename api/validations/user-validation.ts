@@ -31,7 +31,15 @@ export class UserValidation {
         message: 'Please enter a valid birth date',
       },
     )
-    .transform((val) => val);
+    .transform((val) => {
+      return new Date(
+        Date.UTC(
+          moment(val).get('year'),
+          moment(val).get('month'),
+          moment(val).get('date'),
+        ),
+      );
+    });
 
   private static readonly timeZoneSchema = z
     .string()
